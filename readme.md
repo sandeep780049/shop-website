@@ -2,6 +2,12 @@
 
 *E‑Commerce Web Application — Full Stack Project*
 
+## 🌐 Live Demo
+
+The application is deployed and publicly accessible at:
+
+**https://snazzy-shop-website.onrender.com**
+
 ---
 
 ## 📌 Table of Contents
@@ -69,8 +75,8 @@ This is a portfolio-grade project I’m proud to include on my resume, demonstra
 
 
 
- Link to a live URL:
-> [Try the live demo here](https://snazzyshop.vercel.app/)  
+ Link to the live URL:
+> [Try the live demo here](https://snazzy-shop-website.onrender.com/)  
 
 ---
 

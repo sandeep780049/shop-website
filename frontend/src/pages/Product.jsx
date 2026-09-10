@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
+import Reviews from "../components/Reviews";
 
 const Product = () => {
   const { productId } = useParams();
   // console.log(productId);
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart, backendUrl } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
@@ -26,6 +28,24 @@ const Product = () => {
   useEffect(() => {
     fetchProductData();
   }, [productId, products]);
+
+  // Refresh rating info shown for this product after a review is submitted
+  useEffect(() => {
+    const handler = async () => {
+      try {
+        const response = await axios.post(backendUrl + "/api/product/single", {
+          productId,
+        });
+        if (response.data.success) {
+          setProductData((prev) => ({ ...prev, ...response.data.product }));
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    window.addEventListener("review-updated", handler);
+    return () => window.removeEventListener("review-updated", handler);
+  }, [productId, backendUrl]);
 
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
@@ -52,12 +72,19 @@ const Product = () => {
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2 ">{productData.name}</h1>
           <div className="flex items-center gap-1 mt-2">
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_icon} alt="" className="w-3.5" />
-            <img src={assets.star_dull_icon} alt="" className="w-3.5" />
-            <p className="pl-2">(87)</p>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <img
+                key={i}
+                src={
+                  i <= Math.round(productData.avgRating)
+                    ? assets.star_icon
+                    : assets.star_dull_icon
+                }
+                alt=""
+                className="w-3.5"
+              />
+            ))}
+            <p className="pl-2">({productData.ratingCount || 0})</p>
           </div>
           <p className="mt-3 text-3xl font-medium">
             {currency}
@@ -98,7 +125,7 @@ const Product = () => {
       <div className="mt-20">
         <div className="flex">
           <b className="border px-5 py-3 text-sm">Description</b>
-          <p className="border px-5 py-3 text-sm">Review (82)</p>
+          <p className="border px-5 py-3 text-sm">Review ({productData.ratingCount || 0})</p>
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm">
           <p>
@@ -117,6 +144,7 @@ const Product = () => {
             dedicated page with relevant information.
           </p>
         </div>
+        <Reviews productId={productId} />
       </div>
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
     </div>

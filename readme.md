@@ -53,18 +53,20 @@ Users can browse a collection, filter and search products, manage a cart, authen
 - 🔐 Register / login with JWT authentication
 - 💳 Checkout with delivery details + **Cash on Delivery** (Stripe & Razorpay flows scaffolded)
 - 📦 "My Orders" page with real-time order status
+- ⭐ Product reviews & ratings with star ratings, average score & "write a review" form
 
 ### 🛠️ Admin Panel
 - 🔑 Secure admin login (separate from customer accounts)
 - ➕ Add products with **multi-image upload to Cloudinary**
 - 📋 View & remove products from the catalog
 - 🚚 View all orders, update status (Order Placed → Packed → Shipped → Out For Delivery → Delivered)
+- ⭐ Moderate product reviews (view all, delete spam/offensive)
 
 ### ⚙️ Backend
 - REST API built with Express 5
 - JWT-based auth middleware for users and admins
 - Product image upload pipeline (Multer → Cloudinary)
-- MongoDB (Mongoose) models for users, products & orders
+- MongoDB (Mongoose) models for users, products, orders & reviews
 
 ---
 
@@ -161,6 +163,11 @@ Base URL: `{backendUrl}/api`
 | `POST` | `/order/userorders` | User | Get user's orders |
 | `POST` | `/order/list` | Admin | List all orders |
 | `POST` | `/order/status` | Admin | Update order status |
+| `POST` | `/review/add` | User | Add or update a product review |
+| `POST` | `/review/product` | — | Get all reviews for a product |
+| `POST` | `/review/delete` | User | Delete own review |
+| `POST` | `/review/list` | Admin | List all reviews |
+| `POST` | `/review/admin-delete` | Admin | Delete any review |
 
 ---
 
@@ -267,7 +274,7 @@ shop-website/
 ## 🗺️ Roadmap
 
 - [ ] 💳 Complete Stripe & Razorpay payment flows
-- [ ] ⭐ Product reviews & ratings
+- [x] ⭐ Product reviews & ratings
 - [ ] 👤 User profile & address book
 - [ ] 📧 Email notifications (order confirmation, shipping updates)
 - [ ] 📊 Sales analytics dashboard for admins

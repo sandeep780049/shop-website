@@ -52,14 +52,14 @@ Users can browse a collection, filter and search products, manage a cart, authen
 - 🧺 Cart with quantity controls and live totals (₹, INR)
 - 🔐 Register / login with JWT authentication
 - 💳 Checkout with delivery details + **Cash on Delivery** (Stripe & Razorpay flows scaffolded)
-- 📦 "My Orders" page with real-time order status
+- 📦 "My Orders" page with real-time order status & a full tracking timeline
 - ⭐ Product reviews & ratings with star ratings, average score & "write a review" form
 
 ### 🛠️ Admin Panel
 - 🔑 Secure admin login (separate from customer accounts)
 - ➕ Add products with **multi-image upload to Cloudinary**
 - 📋 View & remove products from the catalog
-- 🚚 View all orders, update status (Order Placed → Packed → Shipped → Out For Delivery → Delivered)
+- 🚚 View all orders, update status (Order Placed → Packed → Shipped → Out For Delivery → Delivered), every change recorded in a timestamped tracking history
 - ⭐ Moderate product reviews (view all, delete spam/offensive)
 
 ### ⚙️ Backend
@@ -160,9 +160,9 @@ Base URL: `{backendUrl}/api`
 | `POST` | `/cart/update` | User | Update item quantity |
 | `POST` | `/cart/get` | User | Fetch user cart |
 | `POST` | `/order/place` | User | Place COD order |
-| `POST` | `/order/userorders` | User | Get user's orders |
+| `POST` | `/order/userorders` | User | Get user's orders incl. tracking history |
 | `POST` | `/order/list` | Admin | List all orders |
-| `POST` | `/order/status` | Admin | Update order status |
+| `POST` | `/order/status` | Admin | Update order status (appended to tracking history) |
 | `POST` | `/review/add` | User | Add or update a product review |
 | `POST` | `/review/product` | — | Get all reviews for a product |
 | `POST` | `/review/delete` | User | Delete own review |
@@ -275,6 +275,7 @@ shop-website/
 
 - [ ] 💳 Complete Stripe & Razorpay payment flows
 - [x] ⭐ Product reviews & ratings
+- [x] 🚚 Order tracking with status timeline
 - [ ] 👤 User profile & address book
 - [ ] 📧 Email notifications (order confirmation, shipping updates)
 - [ ] 📊 Sales analytics dashboard for admins

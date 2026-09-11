@@ -20,7 +20,8 @@ const placeOrder = async (req,res) => {
             amount,
             paymentMethod: "COD",
             payment: false,
-            date: Date.now()
+            date: Date.now(),
+            statusHistory: [{ status: 'Order Placed', date: Date.now() }]
         }
 
         const newOrder = new orderModel(orderData);
@@ -53,7 +54,8 @@ const placeOrderStripe = async (req,res) => {
             amount,
             paymentMethod: "Stripe",
             payment: false,
-            date: Date.now()
+            date: Date.now(),
+            statusHistory: [{ status: 'Order Placed', date: Date.now() }]
         }
 
         const newOrder = new orderModel(orderData);
@@ -111,13 +113,38 @@ const userOrders = async (req,res) => {
 
 //update order status 
 
+const ORDER_STATUSES = ['Order Placed', 'Packed', 'Shipped', 'Out For Delivery', 'Delivered']
+
 const updateStatus = async (req,res) => {
     
     try {
         const {orderId , status} = req.body
 
-        await orderModel.findByIdAndUpdate(orderId,{status})
-        res.json({success:true,message:'Status Updated'})
+        if (!ORDER_STATUSES.includes(status)) {
+            return res.json({success:false,message:'Invalid status'})
+        }
+
+        const order = await orderModel.findById(orderId)
+
+        if (!order) {
+            return res.json({success:false,message:'Order not found'})
+        }
+
+        if (order.status === status) {
+            return res.json({success:true,message:`Status is already ${status}`})
+        }
+
+        const statusHistory = Array.isArray(order.statusHistory) ? order.statusHistory : []
+
+        if (!statusHistory.some(entry => entry.status === status)) {
+            statusHistory.push({status, date: Date.now()})
+        }
+
+        order.status = status
+        order.statusHistory = statusHistory
+        await order.save()
+
+        res.json({success:true,message:'Status Updated',statusHistory})
     } catch (error) {
         console.log(error);
         res.json({success:false,message:error.message})

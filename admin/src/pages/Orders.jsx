@@ -34,12 +34,14 @@ const Orders = ({ token }) => {
       const response = await axios.post(backendUrl + '/api/order/status',{orderId,status:event.target.value},{headers:{token}})
 
       if(response.data.success){
+        toast.success(response.data.message)
         await fetchALlOrders()
+      } else {
+        toast.error(response.data.message)
       }
     } catch (error) {
       console.log(error);
-      // toast.error(response.data.message)
-      // res.json({success:false,message:error.message})
+      toast.error(error.message)
     }
   }
 
@@ -87,13 +89,20 @@ const Orders = ({ token }) => {
               {/* Amount & Status */}
               <div className="flex justify-between items-center mt-2">
                 <p className="text-lg font-semibold">{currency} {order.amount}</p>
-                <select onChange={(event)=>statusHandler(event,order._id)} value={order.status} className="border rounded-lg px-3 py-1 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                  <option value="Order Placed">Order Placed</option>
-                  <option value="Shipped">Shipped</option>
-                  <option value="Packed">Packed</option>
-                  <option value="Out For Delivery">Out For Delivery</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
+                <div>
+                  <select onChange={(event)=>statusHandler(event,order._id)} value={order.status} className="border rounded-lg px-3 py-1 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <option value="Order Placed">Order Placed</option>
+                    <option value="Packed">Packed</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out For Delivery">Out For Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                  {Array.isArray(order.statusHistory) && order.statusHistory.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Last update: {new Date(order.statusHistory[order.statusHistory.length - 1].date).toLocaleString()}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

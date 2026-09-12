@@ -54,6 +54,7 @@ Users can browse a collection, filter and search products, manage a cart, authen
 - 💳 Checkout with delivery details + **Cash on Delivery** (Stripe & Razorpay flows scaffolded)
 - 📦 "My Orders" page with real-time order status & a full tracking timeline
 - ⭐ Product reviews & ratings with star ratings, average score & "write a review" form
+- ❤️ Wishlist — save products for later with a heart toggle on every product card & dedicated wishlist page
 
 ### 🛠️ Admin Panel
 - 🔑 Secure admin login (separate from customer accounts)
@@ -168,6 +169,8 @@ Base URL: `{backendUrl}/api`
 | `POST` | `/review/delete` | User | Delete own review |
 | `POST` | `/review/list` | Admin | List all reviews |
 | `POST` | `/review/admin-delete` | Admin | Delete any review |
+| `POST` | `/wishlist/get` | User | Fetch user wishlist (product ids) |
+| `POST` | `/wishlist/toggle` | User | Add or remove a product from wishlist |
 
 ---
 

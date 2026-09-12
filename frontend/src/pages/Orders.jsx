@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import Title from '../components/Title';
 import axios from 'axios';
@@ -10,7 +10,7 @@ const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
   const [orders, setOrders] = useState([])
 
-  const loadOrderData = async () => {
+  const loadOrderData = useCallback(async () => {
     try {
       if (!token) {
         return null;
@@ -26,7 +26,7 @@ const Orders = () => {
       console.log(error);
 
     }
-  }
+  }, [backendUrl, token])
 
   const statusHistoryFor = (order) =>
     Array.isArray(order.statusHistory) && order.statusHistory.length > 0
@@ -38,7 +38,7 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrderData()
-  }, [token])
+  }, [loadOrderData])
 
   return (
     <div className='border-t pt-16'>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
@@ -9,12 +9,12 @@ import Reviews from "../components/Reviews";
 const Product = () => {
   const { productId } = useParams();
   // console.log(productId);
-  const { products, currency, addToCart, backendUrl } = useContext(ShopContext);
+  const { products, currency, addToCart, backendUrl, toggleWishlist, isInWishlist } = useContext(ShopContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
 
-  const fetchProductData = async () => {
+  const fetchProductData = useCallback(() => {
     products.map((item) => {
       if (item._id === productId) {
         setProductData(item);
@@ -23,11 +23,11 @@ const Product = () => {
         return null;
       }
     });
-  };
+  }, [productId, products]);
 
   useEffect(() => {
     fetchProductData();
-  }, [productId, products]);
+  }, [fetchProductData]);
 
   // Refresh rating info shown for this product after a review is submitted
   useEffect(() => {
@@ -111,6 +111,13 @@ const Product = () => {
           </div>
           <button onClick={()=>addToCart(productData._id,size)} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700">
             ADD TO CART
+          </button>
+          <button
+            onClick={() => toggleWishlist(productData._id)}
+            title={isInWishlist(productData._id) ? "Remove from wishlist" : "Add to wishlist"}
+            className="ml-3 border border-gray-300 px-4 py-3 text-sm align-middle"
+          >
+            <img src={isInWishlist(productData._id) ? assets.wishlist_icon_filled : assets.wishlist_icon} className="w-5 inline-block" alt="" />
           </button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-800 mt-5 flex flex-col gap-1">

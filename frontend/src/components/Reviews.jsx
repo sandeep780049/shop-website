@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { ShopContext } from "../context/ShopContext";
@@ -34,7 +34,7 @@ const Reviews = ({ productId }) => {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const response = await axios.post(backendUrl + "/api/review/product", {
         productId,
@@ -45,11 +45,11 @@ const Reviews = ({ productId }) => {
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [backendUrl, productId]);
 
   useEffect(() => {
     fetchReviews();
-  }, [productId]);
+  }, [fetchReviews]);
 
   const submitReview = async () => {
     if (rating === 0) {

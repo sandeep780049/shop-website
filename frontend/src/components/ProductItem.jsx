@@ -5,12 +5,23 @@ import {Link} from 'react-router-dom'
 
 const ProductItem = ({id,image,name,price,avgRating=0,ratingCount=0}) => {
 
-    const {currency} = useContext(ShopContext);
+    const {currency, toggleWishlist, isInWishlist} = useContext(ShopContext);
 
   return (
     <Link className='text-gray-700 cursor-pointer ' to={`/product/${id}`}>
-      <div className='overflow-hidden'>
+      <div className='overflow-hidden relative group'>
         <img className='hover:scale-110 transition ease-in-out' src={image[0]} alt="" />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(id);
+          }}
+          title={isInWishlist(id) ? "Remove from wishlist" : "Add to wishlist"}
+          className='absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center shadow cursor-pointer hover:scale-110 transition'
+        >
+          <img src={isInWishlist(id) ? assets.wishlist_icon_filled : assets.wishlist_icon} className='w-4' alt="" />
+        </button>
       </div>
       <p className='pt-3 pb-1 text-sm'>{name}</p>
       {ratingCount > 0 && (

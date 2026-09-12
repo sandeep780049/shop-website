@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
+/* eslint-disable react-refresh/only-export-components -- context lives with provider in one file */
 // import { products } from "../assets/assets";
 import { toast } from "react-toastify";
 import {useNavigate} from "react-router-dom"
@@ -13,6 +14,7 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [wishlist, setWishlist] = useState([]);
   const [products,setProducts] = useState([]);
   const [token,setToken] = useState('')
   const navigate = useNavigate()
@@ -103,7 +105,7 @@ const ShopContextProvider = (props) => {
 
   
 
-  const getProductsData = async () =>{
+  const getProductsData = useCallback(async () =>{
     try {
       
       const response = await axios.get(backendUrl + '/api/product/list')
@@ -117,9 +119,9 @@ const ShopContextProvider = (props) => {
       console.log(error)
       toast.error(error.message)
     }
-  }
+  }, [backendUrl])
 
-  const getUserCart = async (token) => {
+  const getUserCart = useCallback(async (token) => {
 
     try {
       
@@ -134,20 +136,89 @@ const ShopContextProvider = (props) => {
       toast.error(error.message)
     }
 
-  }
+  }, [backendUrl])
+
+  const loadWishlist = useCallback(async (token) => {
+
+    try {
+      
+      const response = await axios.post(backendUrl + '/api/wishlist/get' , {} , {headers:{token}})
+
+      if(response.data.success){
+        setWishlist(response.data.wishlist)
+      }
+
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+
+  }, [backendUrl])
+
+  const toggleWishlist = async (itemId) => {
+    if (!token) {
+      toast.error("Please login to use your wishlist");
+      navigate("/login");
+      return;
+    }
+
+    const isWishlisted = wishlist.includes(itemId);
+
+    // optimistic update
+    setWishlist((prev) =>
+      isWishlisted ? prev.filter((id) => id !== itemId) : [...prev, itemId]
+    );
+
+    try {
+      const response = await axios.post(
+        backendUrl + "/api/wishlist/toggle",
+        { productId: itemId },
+        { headers: { token } }
+      );
+
+      if (response.data.success) {
+        setWishlist(response.data.wishlist);
+        toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+      } else {
+        setWishlist((prev) =>
+          isWishlisted ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+        );
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+      setWishlist((prev) =>
+        isWishlisted ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+      );
+      toast.error(error.message);
+    }
+  };
+
+  const getWishlistCount = () => wishlist.length;
+
+  const isInWishlist = (itemId) => wishlist.includes(itemId);
 
   useEffect(()=>{
       // console.log(cartItems);
       getProductsData()
 
+    },[getProductsData])
+
+    useEffect(()=>{
+      const storedToken = localStorage.getItem('token');
+      if(storedToken){
+        setToken(storedToken);
+      }
     },[])
 
     useEffect(()=>{
-      if(!token && localStorage.getItem('token')){
-        setToken(localStorage.getItem('token'));
-        getUserCart(localStorage.getItem('token'))
+      if(token){
+        getUserCart(token);
+        loadWishlist(token);
+      } else {
+        setWishlist([]);
       }
-    },[])
+    },[token, getUserCart, loadWishlist])
 
   const value = {
     products,
@@ -163,6 +234,11 @@ const ShopContextProvider = (props) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
+    wishlist,
+    setWishlist,
+    toggleWishlist,
+    getWishlistCount,
+    isInWishlist,
     navigate,
     backendUrl,
     token,

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
@@ -32,7 +32,7 @@ const Collection = () => {
     }
   };
 
-  const applyFilter = () => {
+  const applyFilter = useCallback(() => {
     let productsCopy = products.slice();
     if(showSearch && search){
       productsCopy = productsCopy.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
@@ -49,7 +49,7 @@ const Collection = () => {
     }
 
     setFilterProducts(productsCopy);
-  };
+  },[search, showSearch, category, subCategory, products]);
 
   const sortProduct = () => {
     let fbCopy = filterProducts.slice();
@@ -71,10 +71,11 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory,search,showSearch,products]);
+  }, [applyFilter]);
 
   useEffect(()=>{
     sortProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sortProduct reads latest filterProducts; adding it would loop on each sort
   },[sortType])
 
   // console.log(products)

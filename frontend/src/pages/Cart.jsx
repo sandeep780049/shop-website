@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import CouponBox from "../components/CouponBox";
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate } =
@@ -90,7 +91,8 @@ const Cart = () => {
       </div>
       <div className="flex justify-end my-20">
         <div className="w-full sm:w-[450px]">
-          <CartTotal />
+          <CartTotal showCoupon />
+          <CouponBox />
           <div className="w-full text-end">
             <button
               onClick={() => navigate("/place-order")}

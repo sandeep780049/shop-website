@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
+import CouponBox from "../components/CouponBox";
 import { assets } from "../assets/assets";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
@@ -9,7 +10,7 @@ import axios from 'axios';
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
-  const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products } = useContext(ShopContext);
+  const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products, appliedCoupon, setAppliedCoupon, removeCoupon } = useContext(ShopContext);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -51,10 +52,14 @@ const PlaceOrder = () => {
 
       // console.log(orderItems);
 
+      const subtotal = getCartAmount();
+      const discount = appliedCoupon ? appliedCoupon.discount : 0;
+
       let orderData = {
         address : formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee 
+        amount: Math.max(subtotal - discount + delivery_fee, 0),
+        couponCode: appliedCoupon ? appliedCoupon.code : null
       }
 
       switch(method){
@@ -64,6 +69,7 @@ const PlaceOrder = () => {
           console.log(response.data.success)
           if(response.data.success){
             setCartItems({})
+            removeCoupon()
             toast.success('Order Placed')
             navigate('/orders')
           }else{
@@ -185,6 +191,7 @@ const PlaceOrder = () => {
       <div className="mt-8">
         <div className="mt-8 min-w-80">
           <CartTotal />
+          <CouponBox />
         </div>
         <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />

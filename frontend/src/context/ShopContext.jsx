@@ -15,6 +15,7 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [wishlist, setWishlist] = useState([]);
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // { code, discount }
   const [products,setProducts] = useState([]);
   const [token,setToken] = useState('')
   const navigate = useNavigate()
@@ -220,6 +221,33 @@ const ShopContextProvider = (props) => {
       }
     },[token, getUserCart, loadWishlist])
 
+  // Ask the backend to validate a coupon code against the current cart
+  const applyCouponCode = async (code) => {
+    const amount = getCartAmount();
+    if (amount <= 0) {
+      toast.error("Your cart is empty");
+      return false;
+    }
+    try {
+      const response = await axios.post(backendUrl + '/api/coupon/apply', { code, amount });
+      if (response.data.success) {
+        setAppliedCoupon({ code: response.data.code, discount: response.data.discount });
+        toast.success(response.data.message);
+        return true;
+      } else {
+        setAppliedCoupon(null);
+        toast.error(response.data.message);
+        return false;
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+      return false;
+    }
+  };
+
+  const removeCoupon = () => setAppliedCoupon(null);
+
   const value = {
     products,
     currency,
@@ -239,6 +267,10 @@ const ShopContextProvider = (props) => {
     toggleWishlist,
     getWishlistCount,
     isInWishlist,
+    appliedCoupon,
+    setAppliedCoupon,
+    applyCouponCode,
+    removeCoupon,
     navigate,
     backendUrl,
     token,

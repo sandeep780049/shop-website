@@ -9,6 +9,8 @@ const orderSchema = new mongoose.Schema({
     statusHistory : {type: Array , default: []},
     paymentMethod : {type: String , required: true},
     payment : {type: Boolean , required: true , default : false},
+    couponCode : {type: String , default: null},
+    discount : {type: Number , default: 0},
     date : {type: Number,required:true}
 })
 

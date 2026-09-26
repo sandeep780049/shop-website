@@ -89,7 +89,12 @@ const Reviews = ({token}) => {
               <div className='grid grid-cols-[1fr_2fr] md:grid-cols-[1fr_2fr_1fr_2fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm' key={index}>
                 <p>{productMap[item.productId] || item.productId}</p>
                 <p>{item.name}</p>
-                <p className='md:text-center'>{"★".repeat(item.rating)}{"☆".repeat(5-item.rating)}</p>
+                <div className='md:text-center'>
+                  <p>{"★".repeat(item.rating)}{"☆".repeat(5-item.rating)}</p>
+                  {item.helpful > 0 && (
+                    <p className='text-xs text-gray-500'>{item.helpful} helpful</p>
+                  )}
+                </div>
                 <p className='break-words'>{item.comment}</p>
                 <p className='hidden md:block'>{formatDate(item.date)}</p>
                 <p onClick={()=>removeReview(item._id)} className='text-right md:text-center cursor-pointer text-lg'>X</p>

@@ -13,6 +13,7 @@ const Product = () => {
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
+  const [activeTab, setActiveTab] = useState("description");
 
   const fetchProductData = useCallback(() => {
     products.map((item) => {
@@ -131,27 +132,44 @@ const Product = () => {
       {/* ---Descrption--------- */}
       <div className="mt-20">
         <div className="flex">
-          <b className="border px-5 py-3 text-sm">Description</b>
-          <p className="border px-5 py-3 text-sm">Review ({productData.ratingCount || 0})</p>
+          <button
+            onClick={() => setActiveTab("description")}
+            className={`border px-5 py-3 text-sm ${
+              activeTab === "description" ? "font-bold bg-gray-100" : ""
+            }`}
+          >
+            Description
+          </button>
+          <button
+            onClick={() => setActiveTab("reviews")}
+            className={`border px-5 py-3 text-sm ${
+              activeTab === "reviews" ? "font-bold bg-gray-100" : ""
+            }`}
+          >
+            Review ({productData.ratingCount || 0})
+          </button>
         </div>
-        <div className="flex flex-col gap-4 border px-6 py-6 text-sm">
-          <p>
-            An e-commerce website is an online platform that facilitates the
-            buying and selling of products or services over the internet. It
-            serves as a virtual marketplace where businesses and individuals can
-            showcase their products, interact with customers, and conduct
-            transactions without the need for a physical presence.E-commerce
-            websites have gained immense popularity due to their convenience,
-            accessibility, and the global reach they offer.
-          </p>
-          <p>
-            E-commerce websites typically display products or services along
-            with detailed descriptions, images, prices, and any available
-            variations (e.g., sizes, colors). Each product usually has its own
-            dedicated page with relevant information.
-          </p>
-        </div>
-        <Reviews productId={productId} />
+        {activeTab === "description" ? (
+          <div className="flex flex-col gap-4 border px-6 py-6 text-sm">
+            <p>
+              An e-commerce website is an online platform that facilitates the
+              buying and selling of products or services over the internet. It
+              serves as a virtual marketplace where businesses and individuals can
+              showcase their products, interact with customers, and conduct
+              transactions without the need for a physical presence.E-commerce
+              websites have gained immense popularity due to their convenience,
+              accessibility, and the global reach they offer.
+            </p>
+            <p>
+              E-commerce websites typically display products or services along
+              with detailed descriptions, images, prices, and any available
+              variations (e.g., sizes, colors). Each product usually has its own
+              dedicated page with relevant information.
+            </p>
+          </div>
+        ) : (
+          <Reviews productId={productId} />
+        )}
       </div>
       <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
     </div>

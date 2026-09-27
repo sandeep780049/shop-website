@@ -6,6 +6,8 @@ const reviewSchema = new mongoose.Schema({
     name: {type:String, required:true},
     rating: {type:Number, required:true, min:1, max:5},
     comment: {type:String, required:true, trim:true, maxlength:500},
+    helpful: {type:Number, default:0},
+    helpfulBy: {type:Array, default:[]},
     date: {type:Number, default:Date.now}
 })
 
